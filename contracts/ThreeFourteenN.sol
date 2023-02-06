@@ -32,6 +32,9 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
     mapping(bytes32 => address[]) public tokenTypeCampaignAddreses;
     mapping(address => bool) public isValidCampaignAddres;
 
+    event MintEvent(uint256 indexed tokenId, address indexed business);
+    event BurnEvent(uint256[] indexed tokenIds, address indexed business, address indexed customer);
+
     constructor(IERC20 _native) ERC1155("https://coffeepin.me/token/{id}") {
         _setupRole(ADMIN, msg.sender);
         contractOwner=msg.sender;
@@ -45,9 +48,6 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
-
-    event MintEvent(uint256 indexed tokenId, address indexed business);
-    event BurnEvent(uint256[] indexed tokenIds, address indexed business, address indexed customer);
 
     function newBusiness() public {
         require(
