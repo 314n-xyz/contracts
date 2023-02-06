@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ICampaign.sol";
 
-contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkıntı olursa, Reenterency Guard
+contract ThreeFourteenN is ERC1155Pausable, AccessControl {
     using SafeERC20 for IERC20;
     
     IERC20 public immutable NATIVE;
@@ -28,7 +28,7 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
     mapping(address => uint256[]) public tokenIdsbyBusiness;
     mapping(uint256 => address) public businessAddressbyToken;
     mapping(uint256 => bytes32) public typeofToken;
-    mapping(bytes32 => bool) public isTokenType; // isTokenType olmalı
+    mapping(bytes32 => bool) public isTokenType;
     mapping(bytes32 => address[]) public tokenTypeCampaignAddreses;
     mapping(address => bool) public isValidCampaignAddres;
 
@@ -52,9 +52,9 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
     function newBusiness() public {
         require(
             NATIVE.balanceOf(msg.sender) >= newBusinessPrice,
-            "Not enough ERC20 balance, price of new business defining @newBusinessPrice"
+            "Not enough ERC20 balance for a new business"
         );
-        require(!(hasRole(BUSINESS, msg.sender)), "Caller cannot be BUSINESS");
+        require(!(hasRole(BUSINESS, msg.sender)), "Caller can't be BUSINESS");
         NATIVE.safeTransferFrom(msg.sender,payable(contractOwner), newBusinessPrice);//  işletmenin transfer approvalı nodedan yapıyoruz?
         _setupRole(BUSINESS, msg.sender);
     } 
@@ -75,7 +75,7 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
         require((hasRole(ADMIN, msg.sender)), "Caller must be ADMIN");
         require(
             isTokenType[typeHash]==true,
-            "There is no token type"
+            "There is no such token type"
         );
         tokenTypeCampaignAddreses[typeHash].push(addr);
         isValidCampaignAddres[addr]=true;
@@ -96,7 +96,7 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
         require(hasRole(BUSINESS, msg.sender), "Caller is not a BUSINESS");
         require(
             amount <= NATIVE.balanceOf(msg.sender),
-            "You dont have enough your Token, Your Token to Pin rate is 1to1"
+            "You don't have enough ERC20 balance, Your Token to ERC20 rate is 1 to 1"
         );
         if(tokenId==0){
             require(
@@ -105,7 +105,7 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
             );
             require(
                 isTokenType[tokentype]==true,
-                "There is no token type"
+                "There is no such token type"
             );
             _tokenIds.increment();
             tokenIdsbyBusiness[msg.sender].push(_tokenIds.current());
@@ -126,7 +126,7 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
     }
 
     function externalBurn(address business, address customer, uint256[] calldata tokens, uint256[] calldata amounts) external {
-        require(isValidCampaignAddres[msg.sender],"is not valid adress");
+        require(isValidCampaignAddres[msg.sender],"It is not a valid campaign address");
         _burnBatch(customer, tokens, amounts);
         emit BurnEvent(tokens, business, customer);
     }
@@ -141,7 +141,6 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
         return typeofToken[tokenId];
     }
     function getAllBalanceof() public view returns (uint256[] memory) {
-        //require(hasRole(ADMIN,msg.sender), "Caller is not a ADMIN");
         address[] memory accounts = new address[](_tokenIds.current() + 1);
         uint256[] memory alltokenids = new uint256[](_tokenIds.current() + 1);
         for (uint256 i = 0; i <= _tokenIds.current(); i++) {
