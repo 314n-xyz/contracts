@@ -9,9 +9,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ICampaign.sol";
 
 contract ThreeFourteenN is ERC1155, AccessControl {// Pausable:sıkıntı olursa, Reenterency Guard
-
     using SafeERC20 for IERC20;
-    IERC20 public immutable NATIVE;//using SafeERC20 for IERC20
+    
+    IERC20 public immutable NATIVE;
     address contractOwner;
 
     mapping(address => uint256) public tokenIds;
@@ -55,7 +55,7 @@ contract ThreeFourteenN is ERC1155, AccessControl {// Pausable:sıkıntı olursa
             "Not enough ERC20 balance, price of new business defining @newBusinessPrice"
         );
         require(!(hasRole(BUSINESS, msg.sender)), "Caller cannot be BUSINESS");
-        NATIVE.transferFrom(msg.sender,payable(contractOwner), newBusinessPrice);//  işletmenin transfer approvalı nodedan yapıyoruz?
+        NATIVE.safeTransferFrom(msg.sender,payable(contractOwner), newBusinessPrice);//  işletmenin transfer approvalı nodedan yapıyoruz?
         _setupRole(BUSINESS, msg.sender);
     } 
 
@@ -111,11 +111,11 @@ contract ThreeFourteenN is ERC1155, AccessControl {// Pausable:sıkıntı olursa
             tokenIdsbyBusiness[msg.sender].push(_tokenIds.current());
             businessAddressbyToken[_tokenIds.current()] = msg.sender;
             typeofToken[_tokenIds.current()] = tokentype;
-            NATIVE.transferFrom(msg.sender,payable(contractOwner), tokenTypePrice[tokentype]);
-            NATIVE.transferFrom(msg.sender,payable(contractOwner), amount);
+            NATIVE.safeTransferFrom(msg.sender,payable(contractOwner), tokenTypePrice[tokentype]);
+            NATIVE.safeTransferFrom(msg.sender,payable(contractOwner), amount);
             _mint(msg.sender, _tokenIds.current(), amount, "");
         }else{
-            NATIVE.transferFrom(msg.sender,payable(contractOwner), amount);
+            NATIVE.safeTransferFrom(msg.sender,payable(contractOwner), amount);
             _mint(msg.sender, tokenId, amount, "");
         }
         emit MintEvent(_tokenIds.current(), msg.sender);
