@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ICampaign.sol";
 
-contract ThreeFourteenN is ERC1155, AccessControl {// Pausable:sıkıntı olursa, Reenterency Guard
+contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkıntı olursa, Reenterency Guard
     using SafeERC20 for IERC20;
     
     IERC20 public immutable NATIVE;
