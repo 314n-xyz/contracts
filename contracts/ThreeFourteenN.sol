@@ -28,7 +28,7 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
     mapping(address => uint256[]) public tokenIdsbyBusiness;
     mapping(uint256 => address) public businessAddressbyToken;
     mapping(uint256 => bytes32) public typeofToken;
-    mapping(bytes32 => bool) public tokenTypes; // isTokenType olmalı
+    mapping(bytes32 => bool) public isTokenType; // isTokenType olmalı
     mapping(bytes32 => address[]) public tokenTypeCampaignAddreses;
     mapping(address => bool) public isValidCampaignAddres;
 
@@ -61,20 +61,20 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
 
     function newTokenType(bytes32 typeHash,uint256 price) public {
         require((hasRole(ADMIN, msg.sender)), "Caller must be ADMIN");
-        tokenTypes[typeHash]=true;
+        isTokenType[typeHash]=true;
         tokenTypePrice[typeHash]=price;
     }
 
     function removeTokenType(bytes32 typeHash) public {
         require((hasRole(ADMIN, msg.sender)), "Caller must be ADMIN");
         delete tokenTypeCampaignAddreses[typeHash];
-        delete tokenTypes[typeHash]; 
+        delete isTokenType[typeHash]; 
     }
 
     function newCampaignAddr(bytes32 typeHash, address addr) public payable{
         require((hasRole(ADMIN, msg.sender)), "Caller must be ADMIN");
         require(
-            tokenTypes[typeHash]==true,
+            isTokenType[typeHash]==true,
             "There is no token type"
         );
         tokenTypeCampaignAddreses[typeHash].push(addr);
@@ -104,7 +104,7 @@ contract ThreeFourteenN is ERC1155Pausable, AccessControl {// Pausable:sıkınt�
                 "Not enough ERC20 Balance"
             );
             require(
-                tokenTypes[tokentype]==true,
+                isTokenType[tokentype]==true,
                 "There is no token type"
             );
             _tokenIds.increment();
