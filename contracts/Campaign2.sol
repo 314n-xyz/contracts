@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import "./IThreeFourteenN.sol";
 
-//discountable nft
+// Campaign contract to get a discount by spending single Coffeenft
 contract Campaign2 {
 
     IThreeFourteenN MAIN;
